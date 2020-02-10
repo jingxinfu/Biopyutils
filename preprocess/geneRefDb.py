@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# License           : GPL3
+# Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
+# Date              : 10/02/2020
+# Last Modified Date: 10/02/2020
+# Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
+# -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
 # Date              : 09/02/2020
 # Last Modified Date: 10/02/2020
@@ -298,7 +304,6 @@ def main():
         'mm':mm_ref,
         'match':match_stable
     }
-
     constructRefDb(ref=ref,out=args.output)
     # Generate Test Case
     genTestCase(ref=ref,out=args.testOutput)
