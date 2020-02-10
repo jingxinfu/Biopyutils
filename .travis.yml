@@ -29,8 +29,8 @@ branches:
   - master
   - /^v.*$/
 install: 
-- ci/install_conda.sh
-- ci/setup_conda_env.sh
+- sh ci/install_conda.sh
+- sh ci/setup_conda_env.sh
 - pip install -r requirements.txt 
 - pip install .
 # # command to run tests, e.g. python setup.py test
