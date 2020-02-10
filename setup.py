@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# License           : GPL3
-# Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
-# Date              : 07/02/2020
-# Last Modified Date: 07/02/2020
-# Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
+# Author            : Jingxin Fu <jingxin_fu@outlook.com>
+# Date              : 09/02/2020
+# Last Modified Date: 09/02/2020
+# Last Modified By  : Jingxin Fu <jingxin_fu@outlook.com>
 import setuptools
 from Biopyutils import __version__
 

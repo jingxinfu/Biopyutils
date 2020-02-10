@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# License           : MIT
-# Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
-# Date              : 04/02/2020
-# Last Modified Date: 07/02/2020
-# Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
+# Author            : Jingxin Fu <jingxin_fu@outlook.com>
+# Date              : 09/02/2020
+# Last Modified Date: 10/02/2020
+# Last Modified By  : Jingxin Fu <jingxin_fu@outlook.com>
 __doc__="""
 # Stable Table Fetching
 Original Data Source:http://useast.ensembl.org/biomart
@@ -86,6 +85,109 @@ def getAliasRef(df,alias_col,ref_col,separator=', '):
 
     return sub_df
 
+def genTestCase(ref,out):
+    """genTestCase
+    Generate file for test
+    Parameters
+    ----------
+    ref : dict
+        df is a dict
+        {
+        'hg':pd.DataFrame, for human gene id convert
+        'mm':pd.DataFrame, for mouse gene id convert
+        'match':pd.DataFrame, for mouse to human gene id convert
+        }
+    out : str
+        Output folder
+    Returns:
+    ----------
+    """
+    identifiers =  ['ENST','ENSG','Symbol','Name','Entrez']
+    id_for_species = ['ENSG','Entrez']
+    test_num = 10
+    # Gene id convert
+    for sp in ['hg','mm']:
+        for map_id in identifiers:
+            if map_id == 'ENST':
+                continue # Don't create <id> to ENST map, since ENST ids are normally mapped to multiple Gene associated ID
+            tmp_ref = {}
+            for source_id in identifiers:
+                if source_id == 'Name':
+                    continue
+                if map_id == source_id:
+                    continue
+                tmp = ref[sp][[ source_id,map_id ]].drop_duplicates().dropna().copy() # Remove entire duplicated rows and rows with NA
+                if 'Entrez' in [[source_id,map_id]] :
+                    tmp['Entrez'] = tmp['Entrez'].astype('int64')
+                # Extend map
+                if source_id+'Alias' in ref[sp].columns:
+                    extend_ref = getAliasRef(ref[sp],alias_col=source_id+'Alias',ref_col=map_id)
+                    extend_ref.rename(columns={source_id+'Alias':source_id},inplace=True)
+                    tmp = pd.concat([tmp,extend_ref],axis=0,ignore_index=True) # put tmp variable at first to keep official id when there is duplication issue
+
+                ### Testing Files
+                prefix = os.path.join(out,sp+'_'+source_id+'_to_'+map_id+'_')
+                source_duplicates = tmp.loc[tmp[source_id].duplicated(),source_id].unique()
+                tmp = tmp.drop_duplicates(subset=[source_id])
+                map_uniq = ~tmp[map_id].duplicated()
+
+                # Generate OneToOne map
+                test = tmp.loc[(map_uniq),[source_id,map_id]].iloc[1:test_num,]
+                test['Count']  = 1
+                test.groupby(source_id)['Count'].mean().to_frame().to_csv(prefix+'OneToOne.input')
+                test.groupby(map_id)['Count'].mean().to_frame().to_csv(prefix+'OneToOne.output')
+
+                # Generate OneToMultiple Map
+                test = tmp.loc[(tmp[source_id].isin(source_duplicates)) & (map_uniq),[source_id,map_id]].iloc[1:test_num,] # Choose First Index
+                test['Count']  = 1
+                test.groupby(source_id)['Count'].mean().to_frame().to_csv(prefix+'OneToMultiple.input')
+                test.groupby(map_id)['Count'].mean().to_frame().to_csv(prefix+'OneToMultiple.output')
+
+                # Generate MutipleTo One Map
+                test = tmp.loc[ (~map_uniq),[source_id,map_id]].iloc[1:test_num,]
+                test['Count']=1
+                if source_id == 'ENST':
+                    test.groupby(source_id)['Count'].mean().to_frame().to_csv(prefix+'MultipleToOne.input')
+                    test.groupby(map_id)['Count'].sum().to_frame().to_csv(prefix+'MultipleToOne.output')
+                else:
+                    test.groupby(source_id)['Count'].mean().to_frame().to_csv(prefix+'MultipleToOne.input')
+                    test.groupby(map_id)['Count'].mean().to_frame().to_csv(prefix+'MultipleToOne.output')
+
+
+    # Species convert
+    for gid in id_for_species:
+        tmp  = ref['match'][['hg'+gid,'mm'+gid]].drop_duplicates().dropna()
+        tmp.columns = tmp.columns.map(lambda x:x.replace(gid,''))
+        if gid == 'Entrez':
+            tmp = tmp.astype('int64')
+        for source_id in ['hg','mm']:
+            for map_id in ['hg','mm']:
+                if source_id == map_id:
+                    continue
+                prefix = os.path.join(out,gid+'_'+source_id+'_to_'+map_id+'_')
+                source_uniq = ~tmp[source_id].duplicated()
+                map_uniq = ~tmp[map_id].duplicated()
+                # Generate OneToOne map
+                test = tmp.loc[ (source_uniq) & (map_uniq),[source_id,map_id]].iloc[1:test_num,]
+                test['Count']  = 1
+                test.groupby(source_id)['Count'].mean().to_frame().to_csv(prefix+'OneToOne.input')
+                test.groupby(map_id)['Count'].mean().to_frame().to_csv(prefix+'OneToOne.output')
+                # Generate OneToMultiple Map
+                test = tmp.loc[(~source_uniq) & (map_uniq),[source_id,map_id]].iloc[1:test_num,]
+                test['Count']  = 1
+                test = test.drop_duplicates(subset=[source_id]) # Choose First Index
+                test.groupby(source_id)['Count'].mean().to_frame().to_csv(prefix+'OneToMultiple.input')
+                test.groupby(map_id)['Count'].mean().to_frame().to_csv(prefix+'OneToMultiple.output')
+
+                # Generate MutipleTo One Map
+                test = tmp.loc[ (source_uniq) & (~map_uniq),[source_id,map_id]].iloc[1:test_num,]
+                test['Count']=1
+                test.groupby(source_id)['Count'].mean().to_frame().to_csv(prefix+'MultipleToOne.input')
+                test.groupby(map_id)['Count'].mean().to_frame().to_csv(prefix+'MultipleToOne.output')
+
+
+
+
 
 def constructRefDb(ref,out):
     """constructRefDb
@@ -103,8 +205,6 @@ def constructRefDb(ref,out):
         Output folder
     Returns:
     ----------
-    pd.Series
-        Containing reference database for ID and species(For Entrez ID and Ensembl ID) convert
     """
     identifiers =  ['ENST','ENSG','Symbol','Name','Entrez']
     id_for_species = ['ENSG','Entrez']
@@ -123,18 +223,17 @@ def constructRefDb(ref,out):
                 tmp = ref[sp][[ source_id,map_id ]].drop_duplicates().dropna().copy() # Remove entire duplicated rows and rows with NA
                 if 'Entrez' in [[source_id,map_id]] :
                     tmp['Entrez'] = tmp['Entrez'].astype('int64')
-                tmp.drop_duplicates(subset=[source_id],inplace=True)
                 # Extend map
                 if source_id+'Alias' in ref[sp].columns:
                     extend_ref = getAliasRef(ref[sp],alias_col=source_id+'Alias',ref_col=map_id)
                     extend_ref.rename(columns={source_id+'Alias':source_id},inplace=True)
                     tmp = pd.concat([tmp,extend_ref],axis=0,ignore_index=True) # put tmp variable at first to keep official id when there is duplication issue
+                tmp.drop_duplicates(subset=[source_id],inplace=True)
                 tmp_ref[source_id] = tmp.set_index(source_id)
 
             pd.Series(tmp_ref).to_pickle(os.path.join(out,'geneId_%s_%s.pickle.gz' % (sp,map_id)))
 
     # Species convert
-    map_series=[]
     for gid in id_for_species:
         tmp  = ref['match'][['hg'+gid,'mm'+gid]].drop_duplicates().dropna()
         tmp.columns = tmp.columns.map(lambda x:x.replace(gid,''))
@@ -148,6 +247,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("dir",type=str,help="Path to folder contains requied files")
     parser.add_argument("-o", "--output",type=str,required=True,help="Path to output prefix")
+    parser.add_argument("-t", "--testOutput",type=str,required=True,help="Path to test case prefix")
     args = parser.parse_args()
 
     ensl_rename = {
@@ -192,6 +292,7 @@ def main():
     hg_ref['hugo'] = hg_ref['hugo'].drop('Previous',axis=1)
     hg_ref = pd.concat(hg_ref.values(),axis=0,ignore_index=True,sort=False)
     mm_ref = pd.concat(mm_ref.values(),axis=0,ignore_index=True,sort=False)
+
     ref = {
         'hg':hg_ref,
         'mm':mm_ref,
@@ -199,6 +300,8 @@ def main():
     }
 
     constructRefDb(ref=ref,out=args.output)
+    # Generate Test Case
+    genTestCase(ref=ref,out=args.testOutput)
 
 
 
