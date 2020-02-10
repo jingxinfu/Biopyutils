@@ -12,9 +12,36 @@
 # Last Modified By  : Jingxin Fu <jingxin_fu@outlook.com>
 
 import os
+from textwrap import dedent
 import pandas as pd
 import logging
 from Biopyutils import getGeneRefPath, getSpeciesRefPath
+__all__ = ['idConvert','speciesConvert']
+
+_Comm_docs =dict(
+        id_df = dedent("""\
+            df: pd.DataFrame, pd.Series, or list
+                A Pandas DataFrame/Series indexed by either Entrez Gene ID, Ensembl Gene ID, Ensembl Transcript ID, or Hugo Symbol.
+                or a list of Entrez Gene ID, Ensembl Gene ID, Ensembl Transcript ID, or Hugo Symbol.\
+            """),
+        map_id = dedent("""\
+            map_id: str
+                Which gene identifier that you want to convert the index of/entries of input `df` to.
+                Option: Entrez, Symbol, ENSG
+                Here the Entrez stands for Entrez Gene ID; the Symbol stands for Hugo Symbol;
+                the ENSG stands for Ensembl Gene ID;\
+            """),
+        show_num = dedent("""\
+            show_num: int, optional
+                Number of idenfiers without corresponding `map_id` that will be print on logging stdout (if logger is not None)
+                Default is 10.\
+                """),
+        logger = dedent("""\
+            logger: logging.Logger or None, optional
+                Logging.Logger to record runtime information. Doesn't record runtime information if it is None.
+                Default is None.\
+                """)
+            )
 
 def Keepdtype(func):
     """Keep the original data type"""
@@ -116,28 +143,7 @@ def infoMissing(old,new,miss_ins,show_num=10,logger=None):
 
 @Keepdtype
 def speciesConvert(df,from_species,to_species,logger=None,show_num=10):
-    """speciesConvert converts gene id from one species to another species
-
-    Parameters
-    ----------
-    df : list, pd.Series, or pd.DataFrame
-        df is a list of gene identifiers
-        or pd.Series or pd.DataFrame indexed by a list of gene identifiers
-    from_species : str
-        from_species is the name of species of gene identifiers in df
-    to_species : str
-        to_species is the name of species you want to convert your gene identifiers to
-    show_num: int
-        Number of missing entries showing on logger
-    logger : None or logging.Logger
-        logger is a logging obj to record run info
-
-    Returns:
-    ----------
-    list, pd.Series, or pd.DataFrame (depend on input data type)
-        The <to_species> gene identifiers
-
-    """
+    """speciesConvert converts gene id from one species to another species """
     if from_species == to_species:
         return df
 
@@ -152,31 +158,48 @@ def speciesConvert(df,from_species,to_species,logger=None,show_num=10):
 
     return result.groupby(to_species).mean()
 
+speciesConvert.__doc__ = dedent("""\
+        Convert a list of one gene identifiers from one species to the other species.
+        If the input `df` is pandas.DataFrame or pandas.Series, all numberic columns will be grouped by the correponding gene identifier of `to_species`  and taken the average (sum, if the original gene identifier is Ensemble transcript ID.)
+
+        Parameters
+        ----------
+        {id_df}
+        from_species : str
+            from_species is the name of species that `df`'s gene identifiers belong to.
+        to_species : str
+            to_species is the name of species you want to convert your gene identifiers to
+        {show_num}
+        {logger}
+
+        Returns
+        ----------
+        list, pd.Series, or pd.DataFrame (depend on input data type)
+            if it's pd.Series or pd.DataFrame, then the output should be pd.Series or pd.DataFrame that indexed by the corresponding gene identifiers of `to_species`
+            if it's a list, the the output will be a list of the corresponding gene identifiers of `to_species`.\
+
+
+        Examples
+        ----------
+        Convert Mouse Entrez ID to Human Entrez ID:
+            >>> import pandas as pd
+            >>> from Biopyutils import Comm
+            >>> mouse_df = pd.DataFrame([1]*3,index=[26695,381308,670895])
+            >>> hg_df = Comm.speciesConvert(df=mouse_df,from_species='mm',to_species='hg')
+            >>> hg_df.head()
+                0
+            hg
+            4332    1
+            386672  1
+            >>> mouse_list = mouse_df.index.to_list()
+            >>> hg_list = Comm.speciesConvert(df=mouse_list,from_species='mm',to_species='hg')
+            >>> print(hg_list)
+            [4332, 386672]
+        """).format(**_Comm_docs)
 
 @Keepdtype
 def idConvert(df,species,map_id,logger=None,show_num=10):
-    """idConvert converts gene id from a kind of gene identifiers to <map_id> gene identifiers
-
-    Parameters
-    ----------
-    df : list, pd.Series, or pd.DataFrame
-        df is a list of gene identifiers
-        or pd.Series or pd.DataFrame indexed by a list of gene identifiers
-    species : str
-        species is the name of species of gene identifiers in df
-    map_id : str
-        map_id is the name of gene identifiers you wants to convert to
-    show_num: int
-        Number of missing entries showing on logger
-    logger : None or logging.Logger
-        logger is a logging obj to record run info
-
-    Returns:
-    ----------
-    list, pd.Series, or pd.DataFrame (depend on input data type)
-        The <map_id> gene identifiers
-
-    """
+    """idConvert converts gene id from a kind of gene identifiers to <map_id> gene identifiers"""
     if not species in ['hg','mm']:
         raise ValueError('Only do conversion for "hg" and "mm" species.')
     source_id = inferIDsource(df)
@@ -194,5 +217,50 @@ def idConvert(df,species,map_id,logger=None,show_num=10):
 
     return result
 
+idConvert.__doc__ = dedent("""\
+        Convert a list of one gene identifiers to the other one.
+        If the input `df` is pandas.DataFrame or pandas.Series, all numberic columns will be grouped by the `map_id` and taken the average (sum, if the original gene identifier is Ensemble transcript ID.)
 
+        Parameters
+        ----------
+        {id_df}
+        species : str
+            Which species the input `df` belongs to.
+        {map_id}
+        {show_num}
+        {logger}
+
+        Returns
+        ----------
+        list, pd.Series, or pd.DataFrame (depend on input data type)
+            if it's pd.Series or pd.DataFrame, then the output should be pd.Series or pd.DataFrame that indexed by `map_id`
+            if it's a list, the the output will be a list of `map_id` that original list maps to.\
+
+
+        Examples
+        ----------
+        Convert Human Hugo Symbol to Human Entrez ID:
+            >>> import pandas as pd
+            >>> from Biopyutils import Comm
+            >>> symbol_df = pd.DataFrame([1]*3,index=['PDCD1','CD274','COP1'])
+            >>> entrez_df = Comm.idConvert(df=symbol_df,map_id='Entrez',species='hg')
+            >>> entrez_df.head()
+                0
+            Entrez
+            5133.0   1
+            29126.0  1
+            64326.0  1
+        Convert Mouse Ensembl transcript ID to Mouse Entrez ID:
+            >>> enst_df = pd.DataFrame([1]*3,index=['ENSMUST00000026432','ENSMUST00000163106','NSMUST0000020529'])
+            >>> entrez_df = Comm.idConvert(df=enst_df,map_id='Entrez',species='mm')
+            >>> entrez_df.head()
+                0
+            Entrez
+            12565.0      1
+            100170401.0  1
+            >>> enst_list = enst_df.index.tolist()
+            >>> entrez_list = Comm.idConvert(df=enst_list,map_id='Entrez',species='mm')
+            >>> print(entrez_list)
+            [12565.0, 100170401.0]
+        """).format(**_Comm_docs)
 
