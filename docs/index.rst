@@ -15,10 +15,12 @@ Biopyutils: A Bioinformatic Tookits
    :maxdepth: 2
    :caption: Contents:
 
+   includeme
+
 
 **Biopyutils is a python package with several functions frequently used in genomic data processing.**
 
-**Please see modules and functions in detail:**
+**Please see modules and function in detail:**
 
 * :ref:`modindex`
 * :ref:`search`
