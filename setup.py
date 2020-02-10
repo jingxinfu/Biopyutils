@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
 # Date              : 09/02/2020
-# Last Modified Date: 09/02/2020
+# Last Modified Date: 10/02/2020
 # Last Modified By  : Jingxin Fu <jingxin_fu@outlook.com>
 import setuptools
 from Biopyutils import __version__
@@ -10,6 +10,14 @@ from Biopyutils import __version__
 with open("README.md", "r") as fh:
     long_description = fh.read()
 NAME='Biopyutils'
+try:
+    f = open("requirements.txt", "rb")
+    REQUIRES = [i.strip() for i in f.read().decode("utf-8").split("\n")]
+    f.close()
+except:
+    print("'requirements.txt' not found!")
+    REQUIRES = []
+
 setuptools.setup(
     name=NAME,
     version=__version__,
@@ -23,9 +31,9 @@ setuptools.setup(
     scripts=['bin/'+NAME],
     package_data={NAME: ["data/*"],},
     include_package_data=True,
-    install_requires=['pandas','numpy'],
+    install_requires=REQUIRES,
     python_requires='>=2.7, <4',
-    keywords= ['Gene ID Transfer', 'Bioinformatics','Genomics','Computational Biologist'],
+    keywords= ['Gene ID Convertor', 'Bioinformatics','Genomics','Computational Biologist'],
     classifiers=[
         "Programming Language :: Python",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
