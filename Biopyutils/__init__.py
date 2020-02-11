@@ -5,7 +5,7 @@
 # Date              : 07/02/2020
 # Last Modified Date: 11/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 import os
 import pkg_resources
 

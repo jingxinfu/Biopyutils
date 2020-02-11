@@ -38,7 +38,7 @@ setuptools.setup(
     package_data={NAME: ["data/*"],},
     include_package_data=True,
     install_requires=REQUIRES,
-    python_requires='>=3.5, <4',
+    python_requires='>=3.5, <=3.8',
     keywords= ['Gene ID Convertor', 'Bioinformatics','Genomics','Computational Biologist'],
     classifiers=[
         "Programming Language :: Python 3",
