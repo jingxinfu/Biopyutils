@@ -3,7 +3,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 10/02/2020
-# Last Modified Date: 10/02/2020
+# Last Modified Date: 11/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Configuration file for the Sphinx documentation builder.
 #
@@ -25,7 +25,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Biopyutils'
-copyright = '2020, Jingxin Fu'
+import time
+copyright = u'2020-{}'.format(time.strftime("%Y"))
 author = 'Jingxin Fu'
 import Biopyutils
 release = Biopyutils.__version__
@@ -40,9 +41,11 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.autosummary',
     'numpydoc',
 ]
-
+autosummary_generate = True
+numpydoc_show_class_members = False
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -72,8 +75,20 @@ html_theme_options = {
             'navbar_sidebarrel': False,
             'bootstrap_version': "3",
         }
+# Add any paths that contain custom themes here, relative to this directory.
+import sphinx_bootstrap_theme
+html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+
+# The name of an image file (within the static path) to use as favicon of the
+# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# pixels large.
+html_favicon = "_static/favicon.ico"
+
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = False
+# Output file base name for HTML help builder.
+htmlhelp_basename = 'Bipyutilsdoc'
+
 # -- Extension configuration -------------------------------------------------
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'

@@ -3,7 +3,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 10/02/2020
-# Last Modified Date: 10/02/2020
+# Last Modified Date: 11/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
@@ -12,6 +12,7 @@
 # Last Modified By  : Jingxin Fu <jingxin_fu@outlook.com>
 
 import os
+from functools import wraps
 from textwrap import dedent
 import pandas as pd
 import logging
@@ -45,6 +46,7 @@ _Comm_docs =dict(
 
 def Keepdtype(func):
     """Keep the original data type"""
+    @wraps(func)
     def wrapper(*args,**kwargs):
         list_flag = False
         series_flag = False
@@ -159,6 +161,7 @@ def speciesConvert(df,from_species,to_species,logger=None,show_num=10):
     return result.groupby(to_species).mean()
 
 speciesConvert.__doc__ = dedent("""\
+
         Convert a list of one gene identifiers from one species to the other species.
         If the input `df` is pandas.DataFrame or pandas.Series, all numberic columns will be grouped by the correponding gene identifier of `to_species`  and taken the average (sum, if the original gene identifier is Ensemble transcript ID.)
 

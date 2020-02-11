@@ -5,4 +5,3 @@ Biopyutils
    :maxdepth: 4
 
    Biopyutils
-   setup

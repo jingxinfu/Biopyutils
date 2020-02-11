@@ -4,14 +4,9 @@ Biopyutils package
 Submodules
 ----------
 
-Biopyutils.Comm module
-----------------------
+.. toctree::
 
-.. automodule:: Biopyutils.Comm
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   Biopyutils.Comm
 
 Module contents
 ---------------
