@@ -1,2 +1,2 @@
-pandas
+pandas>=0.24
 numpy
