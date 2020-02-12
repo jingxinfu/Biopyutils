@@ -3,7 +3,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 10/02/2020
-# Last Modified Date: 11/02/2020
+# Last Modified Date: 12/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
@@ -12,12 +12,22 @@
 # Last Modified By  : Jingxin Fu <jingxin_fu@outlook.com>
 
 import os
+import subprocess
 from functools import wraps
 from textwrap import dedent
 import pandas as pd
 import logging
-from Biopyutils import getGeneRefPath, getSpeciesRefPath
-__all__ = ['idConvert','speciesConvert']
+from Biopyutils import getGeneRefPath, getSpeciesRefPath,R_Dir
+
+__all__ = ['idConvert','speciesConvert','Rscript']
+
+def Rscript(cmd):
+    runs = subprocess.Popen('Rscript R/'+cmd,stdout=subprocess.PIPE,shell=True,stderr=subprocess.PIPE)
+    err_msg = [l.decode('utf-8') for l in runs.stderr]
+    if len(err_msg) > 0:
+        raise ValueError('\n'.join(err_msg))
+    return StringIO(runs.stdout).decode('utf-8')
+
 
 _Comm_docs =dict(
         id_df = dedent("""\
