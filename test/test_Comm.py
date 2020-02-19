@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# License           : GPL3
-# Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
-# Date              : 10/02/2020
-# Last Modified Date: 10/02/2020
-# Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
-# -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
 # Date              : 09/02/2020
-# Last Modified Date: 10/02/2020
-# Last Modified By  : Jingxin Fu <jingxin_fu@outlook.com>
+# Last Modified Date: 19/02/2020
+# Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 import os
 import sys
@@ -64,9 +58,6 @@ class TestComm(unittest.TestCase):
 
                 # DataFrame Case
                 id_result  = Comm.idConvert(in_df,species=species,map_id=map_id)
-                print(file_prefix)
-                print(id_result)
-                print(out_df)
                 assert_frame_equal(id_result.reset_index(),out_df.reset_index())
 
                 # Series Case

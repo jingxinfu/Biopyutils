@@ -3,7 +3,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 10/02/2020
-# Last Modified Date: 12/02/2020
+# Last Modified Date: 19/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
@@ -16,17 +16,44 @@ import subprocess
 from functools import wraps
 from textwrap import dedent
 import pandas as pd
+import numpy as np
+import statsmodels
+import statsmodels.api as sm
 import logging
-from Biopyutils import getGeneRefPath, getSpeciesRefPath,R_Dir
+from Biopyutils import getGeneRefPath, getSpeciesRefPath
 
-__all__ = ['idConvert','speciesConvert','Rscript']
+__all__ = ['idConvert','speciesConvert','quantileNorm']
 
-def Rscript(cmd):
-    runs = subprocess.Popen('Rscript R/'+cmd,stdout=subprocess.PIPE,shell=True,stderr=subprocess.PIPE)
-    err_msg = [l.decode('utf-8') for l in runs.stderr]
-    if len(err_msg) > 0:
-        raise ValueError('\n'.join(err_msg))
-    return StringIO(runs.stdout).decode('utf-8')
+def Rscript(cmd,params):
+    exec_path = os.path.abspath(os.path.join(__file__,os.pardir))
+    params = ' '.join(['--%s %.3f' % (k,v) if isinstance(v,(float,int)) else '--%s %s'% (k,v) for k,v in params.items()])
+    cmd = 'Rscript %s/R/%s %s'%(exec_path,cmd,params)
+    subprocess.run(cmd,shell=True)
+
+def lmFit(y,X,x_name):
+    try:
+        result = sm.OLS(y, X).fit(disp=False)
+    except np.linalg.LinAlgError:
+        return (np.nan, np.nan)
+    except statsmodels.tools.sm_exceptions.PerfectSeparationError:
+        return (np.nan, np.nan)
+
+    return (result.tvalues[x_name],result.pvalues[x_name])
+
+def quantileNorm(df):
+    """ Quantile normalization across samples
+    Parameters
+    ----------
+    df : pd.DataFrame
+        indexed by features and samples are in the column
+    Returns
+    -------
+    pd.DataFrame
+        A dataframe that has been quantile normalized
+    """
+    rank_mean = df.stack().groupby(df.rank(method='first').stack().astype(int)).mean()
+    result = df.rank(method='min').stack().astype(int).map(rank_mean).unstack()
+    return result
 
 
 _Comm_docs =dict(

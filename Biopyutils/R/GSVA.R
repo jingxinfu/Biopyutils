@@ -2,39 +2,48 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 11/02/2020
-# Last Modified Date: 11/02/2020
+# Last Modified Date: 19/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
-options(warn=-1)
+
 main = function(){
     args <- parse_input() 
-    exprsn <- fread(args$exprsn,data.table = F)
+    exprsn <- fread(args$exprsn_path,data.table = F)
     rownames(exprsn) <- exprsn[,1]
     exprsn <- as.matrix(exprsn[,-1])
-    geneSets <- customGeneSet(rownames(exprsn),gene_list=args$gset)
-    result <- t(gsva(exprsn,geneSet,method=args$method,kcdf=args$kcdf))
-    cat(format_csv(result))
+    geneSets <- customGeneSet(rownames(exprsn),args$geneset_path)
+    result <- t(gsva(exprsn,geneSets,method=args$method,kcdf=args$kcdf,verbose=F))
+    write.csv(result,args$output)
 }
 
-customGeneSet = function(candiates,gset){
-    gset = read.table(gset,row.names=1)
+customGeneSet = function(candiates,gset_path){
+    gset = read.table(gset_path,row.names=1,header=F,stringsAsFactor=F)
     filter_gset = lapply(rownames(gset),function(n){
-        member = strsplits(gset[n,],split=',')[[1]]
+        member = strsplit(gset[n,1],split=',')[[1]]
         member = member[member %in% candiates]
-        ifelse(length(member)>0,member,NA)
+        if(length(member)>0){
+            return(member)
+        }else{
+            return(NA)
+        }
     })
+
     names(filter_gset) = rownames(gset)
     return(filter_gset[!is.na(filter_gset)])
 }
 
 parse_input = function(){
-    require_pkgs <- c('data.table','GSVA','argparse','readr')
+    require_pkgs <- c('data.table','GSVA','argparse')
+    scripts_wd <- dirname(thisFile())
+    source(file.path(scripts_wd,'utils.R'))
     load_package(require_pkgs)
-    args <- commandArgs(trailingOnly = T)
-    parser <- ArgumentParser(description='Execute R bioconductors GSVA')
 
+    parser <- ArgumentParser(description='Execute R bioconductors GSVA')
     inputs <- parser$add_argument_group('Input Option')
-    inputs$add_argument('--exprsn',help='Exrpsn Path')
-    inputs$add_argument('--gset',required=T,help='Gene set Path')
+    inputs$add_argument('--exprsn_path',help='Exrpsn Path')
+    inputs$add_argument('--geneset_path',required=T,help='Gene set Path')
+
+    outputs <- parser$add_argument_group('Output Option')
+    outputs$add_argument('--output',help='Output Path')
 
     cmds <- parser$add_argument_group('GSVA command Option')
     kcdf_str <-'Character string denoting the kernel to use during the non-parametric estimation
@@ -62,19 +71,21 @@ parse_input = function(){
     return(args)
 }
 
-load_package = function(pkgs){
-    if(!is.element('BiocManager', installed.packages()[,1])){
-            install.packages('BiocManager')
-    }
-    for(el in pkgs){
-            if (!is.element(el, installed.packages()[,1]))BiocManager::install(el)
-        suppressWarnings(suppressMessages(invisible(require(el, character.only=TRUE))))
-          
-    }
-    
+thisFile = function() {
+  cmdArgs <- commandArgs(trailingOnly = FALSE)
+  needle <- "--file="
+  match <- grep(needle, cmdArgs)
+  opt_input = cmdArgs[-match]
+  if (length(match) > 0) {
+    # Rscript
+    return(sub(needle, "", cmdArgs[match]))
+  } else {
+    # 'source'd via R console
+    return(sys.frames()[[1]]$ofile)
+  }
 }
 
-if (!interactive()){
-      main()
 
+if (!interactive()){
+      suppressWarnings(suppressMessages(main()))
 }
