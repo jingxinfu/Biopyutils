@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 12/02/2020
-# Last Modified Date: 19/02/2020
+# Last Modified Date: 20/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 DESCRIPTION = 'Immune cell abundance deconvolution'
 main = function(){
@@ -19,25 +19,21 @@ main = function(){
   parser$add_argument("--cancer",required=T,type="character",help="[Required] TCGA cancer type")
   args <- parser$parse_args()
 
-  exprsn <- fread(args$exprsn_path)
-  exprsn <- as.data.frame(exprsn)
+  exprsn <- fread(args$exprsn_path,data.table=F)
   exprsn <- exprsn[!is.na(exprsn[,1]),] # remove NA gene symbol
   rownames(exprsn) <- exprsn[,1]
   exprsn <- exprsn[,-1]
-  result <- ImmuneCellEstimation(exprsn=exprsn,cancer=args$cancer,scripts_wd=scripts_wd)
-  fwrite(result,file=args$output,sep=',')
-}
-ImmuneCellEstimation = function(exprsn,cancer,scripts_wd,
-                                list_of_tools=c('quantiseq','timer','cibersort','cibersort_abs','mcp_counter','xcell','epic'),
-                                is_mouse=F){
-  cancerTypeVector = get(load(file.path(scripts_wd,"immuneDeconv_Packed/avgTPM.Rdata")))
-  if(cancer == 'AUTO'){
-    sp_correlation = apply(cor(exprsn,cancerTypeVector,method='spearman',use='complete.obs'),1,which.max)
+
+  if(args$cancer == 'AUTO'){
+    cancerTypeVector = get(load(file.path(scripts_wd,"immuneDeconv_Packed/avgTPM.Rdata")))
+    ol_genes = intersect(rownames(cancerTypeVector),rownames(exprsn))
+    sp_correlation = apply(cor(exprsn[ol_genes,],cancerTypeVector[ol_genes,],method='spearman',use='complete.obs'),1,which.max)
     max_cnt = table(colnames(cancerTypeVector)[sp_correlation])
     cancer = names(max_cnt)[which.max(max_cnt)]
   }
+  list_of_tools=c('quantiseq','timer','cibersort','cibersort_abs','mcp_counter','xcell','epic')
   result <- rbindlist(parallel::mclapply(list_of_tools,function(x) force(deconvAll(exprsn=exprsn,tool=x,cancer=cancer,scripts_wd=scripts_wd)),mc.cores=7))
-  return(result)
+  fwrite(result,file=args$output,sep=',')
 }
 
 TIMER <- function(e, cancer,scripts_wd) {

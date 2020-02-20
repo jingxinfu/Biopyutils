@@ -1,1 +1,2 @@
-CTL    GZMA,GZMB,PRF1
+Name	Member
+CTL	GZMA,GZMB,PRF1

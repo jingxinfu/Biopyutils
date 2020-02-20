@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 11/02/2020
-# Last Modified Date: 19/02/2020
+# Last Modified Date: 20/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 import tempfile
@@ -129,7 +129,7 @@ def gsva(exprsn,geneset,method='ssgsea',kcdf='Gaussian'):
             output= os.path.join(dirpath,'out')
         )
         exprsn.to_csv(params['exprsn_path'])
-        geneset.to_csv(params['geneset_path'],sep='\t')
+        geneset.to_csv(params['geneset_path'],sep='\t',index=False,header=False)
 
         Rscript(cmd='GSVA.R',params=params)
         result = pd.read_csv(params['output'],index_col=0)

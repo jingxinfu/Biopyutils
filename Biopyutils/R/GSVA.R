@@ -2,7 +2,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 11/02/2020
-# Last Modified Date: 19/02/2020
+# Last Modified Date: 20/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 main = function(){
@@ -16,7 +16,7 @@ main = function(){
 }
 
 customGeneSet = function(candiates,gset_path){
-    gset = read.table(gset_path,row.names=1,header=F,stringsAsFactor=F)
+    gset = read.table(gset_path,row.names=1,header=F,stringsAsFactor=F,sep='\t')
     filter_gset = lapply(rownames(gset),function(n){
         member = strsplit(gset[n,1],split=',')[[1]]
         member = member[member %in% candiates]
@@ -87,5 +87,6 @@ thisFile = function() {
 
 
 if (!interactive()){
-      suppressWarnings(suppressMessages(main()))
+    #main()
+    suppressWarnings(suppressMessages(main()))
 }

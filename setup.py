@@ -3,7 +3,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 11/02/2020
-# Last Modified Date: 11/02/2020
+# Last Modified Date: 20/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
@@ -35,7 +35,7 @@ setuptools.setup(
     url="https://jingxinfu.github.io/"+NAME,
     packages=setuptools.find_packages(),
     scripts=['bin/'+NAME],
-    package_data={NAME: ["data/*"],},
+    package_data={NAME: ["data/*",'R/*','R/*/*'],},
     include_package_data=True,
     install_requires=REQUIRES,
     python_requires='>=3.5, <=3.8',
