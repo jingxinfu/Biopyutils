@@ -12,22 +12,20 @@ python:
   - "3.7"
   - "3.8"
 
-    #addons:
-    #  apt:
-    #    upadate: true
-    #    packages:
-    #      - libxml2-dev
-    #      - libopenblas-base 
-    #      - r-base
+before_install:
+  - deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/
+  - sudo apt-get update
+  - sudo apt-get install r-base 
+  - sudo apt-get install r-base-dev
 
 # command to install dependencies
 install:
   - pip3 install .
-  - wget https://cran.r-project.org/src/base/R-3/R-3.5.0.tar.gz
-  - tar -xzf R-3.5.0.tar.gz
-  - cd R-3.5.0
-  - ./configure && make && make install
-  - cd ../
+    #  - wget https://cran.r-project.org/src/base/R-3/R-3.5.0.tar.gz
+    #  - tar -xzf R-3.5.0.tar.gz
+    #  - cd R-3.5.0
+    #  - ./configure && make && make install
+    #  - cd ../
 
 # command to run tests
 script: 
