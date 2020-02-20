@@ -3,7 +3,9 @@
 # Date              : 11/02/2020
 # Last Modified Date: 20/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
-language: python
+language: 
+  - python
+  - r
 os: 
   - linux
 python:
@@ -11,17 +13,22 @@ python:
   - "3.6"      
   - "3.7"
   - "3.8"
-addons:
-  apt:
-    packages:
-      - libxml2-dev
-      - libopenblas-base 
-      - r-base
+r:
+  - "3.3"
+  - "3.4"
+  - "3.5" 
+  - "3.6" 
+    #addons:
+    #  apt:
+    #    packages:
+    #      - libxml2-dev
+    #      - libopenblas-base 
 # command to install dependencies
 install:
   - pip3 install -r requirements.txt
 # command to run tests
-script:
+script: 
   - mkdir ~/R/
   - echo "R_LIBS=~/R" > ~/.Renviron 
+  - R --version
   - pytest

@@ -24,10 +24,19 @@ main = function(){
   rownames(exprsn) <- exprsn[,1]
   exprsn <- exprsn[,-1]
 
+
   if(args$cancer == 'AUTO'){
     cancerTypeVector = get(load(file.path(scripts_wd,"immuneDeconv_Packed/avgTPM.Rdata")))
     ol_genes = intersect(rownames(cancerTypeVector),rownames(exprsn))
-    sp_correlation = apply(cor(exprsn[ol_genes,],cancerTypeVector[ol_genes,],method='spearman',use='complete.obs'),1,which.max)
+    sp_correlation = na.omit(apply(cor(exprsn[ol_genes,],cancerTypeVector[ol_genes,],method='spearman',use='complete.obs'),
+                           1,
+                           function(x){
+                               if(length(na.omit(x)) > 0){
+                                   return(which.max(x))
+                               }else{
+                                   return(NA)
+                               }
+                           }))
     max_cnt = table(colnames(cancerTypeVector)[sp_correlation])
     cancer = names(max_cnt)[which.max(max_cnt)]
   }
