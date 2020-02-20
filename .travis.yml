@@ -22,9 +22,12 @@ python:
 
 # command to install dependencies
 install:
-  - sudo apt-get install -y r-base
   - pip3 install .
-
+  - wget https://cran.r-project.org/src/base/R-3/R-3.5.0.tar.gz
+  - tar -xzf R-3.5.0.tar.gz
+  - cd R-3.5.0
+  - ./configure && make && make install
+  - cd ../
 
 # command to run tests
 script: 
