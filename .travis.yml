@@ -5,7 +5,6 @@
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 language: 
   - python
-  - r
 os: 
   - linux
 python:
@@ -13,16 +12,14 @@ python:
   - "3.6"      
   - "3.7"
   - "3.8"
-r:
-  - "3.3"
-  - "3.4"
-  - "3.5" 
-  - "3.6" 
-    #addons:
-    #  apt:
-    #    packages:
-    #      - libxml2-dev
-    #      - libopenblas-base 
+
+addons:
+  apt:
+    packages:
+      - libxml2-dev
+      - libopenblas-base 
+      - r-base=3.5
+
 # command to install dependencies
 install:
   - pip3 install -r requirements.txt
