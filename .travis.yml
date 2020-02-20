@@ -11,10 +11,17 @@ python:
   - "3.6"      
   - "3.7"
   - "3.8"
+addons:
+  apt:
+    packages:
+      - libxml2-dev
+      - libopenblas-base 
+      - r-base
 # command to install dependencies
 install:
-  - sudo apt-get install libopenblas-base r-base
   - pip3 install -r requirements.txt
 # command to run tests
 script:
+  - mkdir ~/R/
+  - echo "R_LIBS=~/R" > ~/.Renviron 
   - pytest
