@@ -15,8 +15,8 @@ python:
 before_install:
   - echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" | sudo tee /etc/apt/sources.list.d/docker.list
   - sudo apt-get update
-  - sudo apt-get install r-base 
-  - sudo apt-get install r-base-dev
+  - sudo apt-get install -y --allow-unauthenticated r-base 
+  - sudo apt-get install -y --allow-unauthenticated r-base-dev
 
 # command to install dependencies
 install:
