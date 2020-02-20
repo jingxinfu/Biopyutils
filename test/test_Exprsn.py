@@ -26,7 +26,6 @@ class TestbulkRNASeq(unittest.TestCase):
         # Parameters
         self.geneset = pd.read_csv(os.path.join(TestData,'Exprsn','bulkRNASeq_geneset.txt'),sep='\t')
 
-        print(self.geneset)
         self.contrast = []
         with open(os.path.join(TestData,'Exprsn','bulkRNASeq_contrast.csv'),'r') as f:
             for l in f:
