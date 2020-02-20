@@ -15,10 +15,11 @@ python:
 
 addons:
   apt:
+    upadate: true
     packages:
       - libxml2-dev
       - libopenblas-base 
-      - r-base=3.5
+      - r-base
 
 # command to install dependencies
 install:
