@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
 # Date              : 09/02/2020
-# Last Modified Date: 19/02/2020
+# Last Modified Date: 20/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 import os
@@ -10,7 +10,7 @@ import sys
 import pandas as pd
 from pandas.testing import assert_frame_equal,assert_series_equal
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),'..'))
+#sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),'..'))
 import unittest
 from Biopyutils import Comm
 

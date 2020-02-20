@@ -3,8 +3,7 @@
 # Date              : 11/02/2020
 # Last Modified Date: 20/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
-language: 
-  - python
+language: python
 os: 
   - linux
 python:
@@ -13,17 +12,20 @@ python:
   - "3.7"
   - "3.8"
 
-addons:
-  apt:
-    upadate: true
-    packages:
-      - libxml2-dev
-      - libopenblas-base 
-      - r-base
+    #addons:
+    #  apt:
+    #    upadate: true
+    #    packages:
+    #      - libxml2-dev
+    #      - libopenblas-base 
+    #      - r-base
 
 # command to install dependencies
 install:
-  - pip3 install -r requirements.txt
+  - sudo apt-get install -y r-base
+  - pip3 install .
+
+
 # command to run tests
 script: 
   - mkdir ~/R/
