@@ -6,10 +6,11 @@
 
 load_package = function(pkgs){
     if (!requireNamespace("BiocManager", quietly = TRUE)){
-            install.packages("BiocManager")
+            install.packages("BiocManager",repos = "http://cran.us.r-project.org")
             BiocManager::install(version = "3.10")
     }
-    if (!requireNamespace("remotes", quietly = TRUE))install.packages("remotes")
+    if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes",repos = "http://cran.us.r-project.org")
+
     #if(!is.element('BiocManager', installed.packages()[,1])){
     #        install.packages('BiocManager',repos = "http://cran.us.r-project.org")
     #}
@@ -18,8 +19,9 @@ load_package = function(pkgs){
                 if(grepl('/',el)){
                     remotes::install_github(el)
                     el <- strsplit(el,split='/')[[1]][2]
-                }
+                }else{
                 BiocManager::install(el)
+                }
             }
             invisible(require(el, character.only=TRUE))
     }
