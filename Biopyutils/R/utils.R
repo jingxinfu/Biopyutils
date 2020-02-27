@@ -9,11 +9,16 @@ load_package = function(pkgs){
             install.packages("BiocManager")
             BiocManager::install(version = "3.10")
     }
+    if (!requireNamespace("remotes", quietly = TRUE))install.packages("remotes")
     #if(!is.element('BiocManager', installed.packages()[,1])){
     #        install.packages('BiocManager',repos = "http://cran.us.r-project.org")
     #}
     for(el in pkgs){
             if (!is.element(el, installed.packages()[,1])){
+                if(grepl('/',el)){
+                    remotes::install_github(el)
+                    el <- strsplit(el,split='/')[[1]][2]
+                }
                 BiocManager::install(el)
             }
             invisible(require(el, character.only=TRUE))
