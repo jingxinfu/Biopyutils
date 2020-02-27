@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 14/02/2020
-# Last Modified Date: 19/02/2020
+# Last Modified Date: 27/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 main = function(){
@@ -34,7 +34,7 @@ LimmaVoom = function(counts,group,contrast,batch=NULL,cutoff=1,fig_out=NULL){
     plot = F
     if(!is.null(fig_out)){
         plot = T
-        pdf(file=fig_out)
+        pdf(file=paste0(fig_out,'.pdf'))
         # Check whether the batch effect has been remove or not
         if(!is.null(batch))plotMDS(d, col = as.numeric(batch))
     }

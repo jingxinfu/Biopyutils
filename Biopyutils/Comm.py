@@ -3,7 +3,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 10/02/2020
-# Last Modified Date: 19/02/2020
+# Last Modified Date: 25/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
@@ -17,6 +17,7 @@ from functools import wraps
 from textwrap import dedent
 import pandas as pd
 import numpy as np
+from statsmodels import stats
 import statsmodels
 import statsmodels.api as sm
 import logging
@@ -29,6 +30,35 @@ def Rscript(cmd,params):
     params = ' '.join(['--%s %.3f' % (k,v) if isinstance(v,(float,int)) else '--%s %s'% (k,v) for k,v in params.items()])
     cmd = 'Rscript %s/R/%s %s'%(exec_path,cmd,params)
     subprocess.run(cmd,shell=True)
+
+def fdrAdjust(p_value, method='fdr_bh'):
+    """ Adjust p value
+    Parameters
+    ----------
+    p_value : pd.Series
+        Original p value
+    method : str, optional
+        Method used for testing and adjustment of pvalues. Default: "fdr_bh"
+        Can be either the full name or initial letters. Available methods are:
+        bonferroni : one-step correction
+        sidak : one-step correction
+        holm-sidak : step down method using Sidak adjustments
+        holm : step-down method using Bonferroni adjustments
+        simes-hochberg : step-up method (independent)
+        hommel : closed method based on Simes tests (non-negative)
+        fdr_bh : Benjamini/Hochberg (non-negative)
+        fdr_by : Benjamini/Yekutieli (negative)
+        fdr_tsbh : two stage fdr correction (non-negative)
+        fdr_tsbky : two stage fdr correction (non-negative)
+
+    Returns
+    -------
+    pd.Series
+        p-values corrected for multiple tests
+    """
+    adjust_p = stats.multitest.multipletests(p_value, method=method)[1]
+
+    return adjust_p
 
 def lmFit(y,X,x_name):
     try:

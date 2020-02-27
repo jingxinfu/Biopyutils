@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 18/02/2020
-# Last Modified Date: 20/02/2020
+# Last Modified Date: 27/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 import os
@@ -35,23 +35,26 @@ class TestbulkRNASeq(unittest.TestCase):
         self.infiltras = pd.read_csv(os.path.join(TestData,'Exprsn','bulkRNASeq_infiltras.csv'),index_col=0)
         self.signature = pd.read_csv(os.path.join(TestData,'Exprsn','bulkRNASeq_signature.csv'),index_col=0)
 
-#    def test_removeBatch(self):
-#        testIns = bulkRNASeq(tpm=self.Tpm,counts=self.counts,meta=self.meta)
-#        testIns.removeBatch()
-#        assert_frame_equal(testIns.tpm,self.noBatchTpm)
-#
-#    def test_getDEG(self):
-#        testIns = bulkRNASeq(tpm=self.Tpm,counts=self.counts,meta=self.meta)
-#        testIns.getDEG(group_name='Source',contrast=self.contrast)
-#        assert_frame_equal(testIns.DEG['TumorMinusNormal'],self.DEG)
+    def test_removeBatch(self):
+        testIns = bulkRNASeq(tpm=self.Tpm,counts=self.counts,meta=self.meta)
+        testIns.removeBatch(fig_out='test_Batch')
+        assert_frame_equal(testIns.tpm,self.noBatchTpm)
+
+    def test_getDEG(self):
+       testIns = bulkRNASeq(tpm=self.Tpm,counts=self.counts,meta=self.meta)
+       testIns.getDEG(group_name='Source',contrast=self.contrast,force_limma=True)
+       assert_frame_equal(testIns.DEG['TumorMinusNormal'],self.DEG)
+
+       # Test the linear one
+       testIns.getDEG(group_name='Source',contrast=self.contrast)
 
     def test_getSignature(self):
-        testIns = bulkRNASeq(tpm=self.Tpm,counts=self.counts,meta=self.meta)
-        testIns.getSignature(geneset=self.geneset)
-        assert_frame_equal(testIns.signature,self.signature)
+       testIns = bulkRNASeq(tpm=self.Tpm,counts=self.counts,meta=self.meta)
+       testIns.getSignature(geneset=self.geneset)
+       assert_frame_equal(testIns.signature,self.signature)
 
-#    def test_getInfiltras(self):
-#        testIns = bulkRNASeq(tpm=self.Tpm,counts=self.counts,meta=self.meta)
-#        testIns.getInfiltras()
-#        assert_frame_equal(testIns.infiltras, self.infiltras)
+    def test_getInfiltras(self):
+        testIns = bulkRNASeq(tpm=self.Tpm,counts=self.counts,meta=self.meta)
+        testIns.getInfiltras()
+        assert_frame_equal(testIns.infiltras, self.infiltras)
 

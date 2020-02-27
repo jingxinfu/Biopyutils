@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 11/02/2020
-# Last Modified Date: 20/02/2020
+# Last Modified Date: 27/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 import tempfile
-#import subprocess
+import scipy
 import os
 import pandas as pd
 import numpy as np
-from Biopyutils.Comm import Rscript,lmFit,quantileNorm
+from sklearn import preprocessing,decomposition,linear_model,ensemble
+from Biopyutils.Comm import Rscript,lmFit,quantileNorm,fdrAdjust
 
 __all__ = ['bulkRNASeq']
 class _BaseExprsn:
@@ -19,9 +20,11 @@ class _BaseExprsn:
         self.meta = meta
         if is_normalized:
             self.tpm = None
+            self.logTpm = None
             self.normTpm = tpm
         else:
             self.tpm = tpm
+            self.logTpm = np.log2(1+tpm)
             self.normTpm = self.exprsnNorm()
 
         self.cancer = cancer
@@ -44,18 +47,22 @@ class _BaseExprsn:
             raise ValueError("Samples meta information is required to do batch effect removal.")
         if not 'Batch' in self.meta.columns:
             raise KeyError("Cannot find 'Batch' column in the meta data frame.")
-
         self.tpm = batchRemoval(self.tpm,self.meta,fig_out=fig_out)
+        fig_out_log = fig_out+'_log' if fig_out else None
+        self.logTpm = batchRemoval(self.logTpm,self.meta,fig_out=fig_out_log)
 
-    def getDEG(self,group_name,contrast,fig_out=None):
+
+
+    def getDEG(self,group_name,contrast,force_limma=False,fig_out=None):
         '''Do differential gene expression'''
-        if self.tpm.shape[1] >=50:
-            self.DEG = regDEG(tpm=self.tpm,meta=self.meta,group_name=group_name)
-        if self.counts is None:
-            raise ValueError('Please provide count-base expression profiles.')
         if not group_name in self.meta.columns:
             raise KeyError("Cannot find a column named '%s' in the meta dataframe." % group_name)
-        self.DEG = limmaVoom(self.counts,self.meta,group_name,contrast,fig_out=fig_out)
+        if self.tpm.shape[1] >=10 and (not force_limma):
+            self.DEG = regDEG(logTpm=self.logTpm,meta=self.meta,group_name=group_name,contrast=contrast)
+        elif self.counts is None:
+            raise ValueError('Please provide count-base expression profiles.')
+        else:
+            self.DEG = limmaVoom(self.counts,self.meta,group_name,contrast,fig_out=fig_out)
 
     def getSignature(self,geneset):
         self.signature = gsva(self.tpm,geneset=geneset,method='ssgsea',kcdf='Gaussian')
@@ -92,12 +99,49 @@ def rnaSeqNorm(df):
     df = df.subtract(df.mean(axis=1),axis=0)
     return df
 
-def regDEG(tpm,meta,group_name):
-    logTpm = np.log2(1+tpm)
-    # Remove low expressed genes
+def regDEG(logTpm,meta,group_name,contrast):
+    """ Using simple Wilcoxon-Test to find differetial Genes
+
+    Parameters
+    ----------
+    logTpm: pd.DataFrame
+        logTPM, indexed by gene name and columned by sample id
+    meta : pd.DataFrame
+        Meta infomration
+    group_name : str
+        Column names that has group information
+    contrast: list
+        A list of comparison
+
+    Returns:
+    ----------
+    Differential Expression Coefficient and statistic significance
+    """
+    # Remove low expressed genes and low variant genes
+    logTpm = logTpm.loc[logTpm.var(axis=1)> 0.1,:]
     logTpm = logTpm.loc[logTpm.sum(axis=1)>1,:]
-    X = meta.loc[logTpm.columns,meta.columns.intersection(['Batch',group_name])]
-    result = logTpm.apply(lambda v:limFit(X=X,y=y,x_name=group_name))
+    scaler = preprocessing.StandardScaler()
+
+    result = {}
+    for statement in contrast:
+        # Factorizing contrast to 1,0
+        factors = statement.split('Minus')
+        factors_map = {factors[0]:1,factors[1]:-1}
+        Y  = meta.loc[logTpm.columns,group_name].map(factors_map).dropna(axis=0)
+        # replace nan with zero and inf with finite numbers
+        rawX = pd.DataFrame(np.nan_to_num(logTpm.loc[:,Y.index]),index=logTpm.index,columns=Y.index)
+        #logFc = rawX.dot(Y.T)
+        logFc =  rawX.apply(lambda v:np.mean(v[Y==1]) - np.mean(v[Y==-1]),axis=1).values
+        pvalue = rawX.apply(lambda v: scipy.stats.mannwhitneyu(x=v[Y==1],y=v[Y==-1],alternative='greater').pvalue,axis=1).ravel()
+        #logFc = np.array([x.statistic for x in logFc_Pvalue])
+        #pvalue = [x.pvalue for x in logFc_Pvalue ]
+        zscore = scaler.fit_transform(logFc.reshape(-1,1)).ravel()
+        fdr = fdrAdjust(pvalue)
+        result[statement] = pd.DataFrame({
+            'logFc':logFc,'Z-Score':zscore,
+            'Pvalue':pvalue,'FDR':fdr
+        },index=logTpm.index)
+
     return result
 
 # R Function API

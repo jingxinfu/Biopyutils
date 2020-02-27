@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 14/02/2020
-# Last Modified Date: 19/02/2020
+# Last Modified Date: 27/02/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 main = function(){
@@ -16,17 +16,24 @@ main = function(){
     modcombat = model.matrix(~1, data=meta)
     result <- ComBat(exprsn,batch=meta$Batch,mod=modcombat,par.prior=T,prior.plots=F)
     if(!is.null(args$fig_out)){
-        pdf(file=args$fig_out)
-        par(mfrow=c(1,2))
-        boxplot(as.data.frame(exprsn),main="Original")
-        boxplot(as.data.frame(result),main="Batch corrected")
-        dev.off()
+        pdf(NULL)
+        p1 <- autoplot(prcomp(t(exprsn)),data =meta ,col='Batch',size=1,frame = TRUE, frame.type = 'norm')+
+            scale_color_manual(values =c("#377EB8","#E41A1C"))+
+            theme_bw()+
+            labs(x = "PC1", y = "PC2",title='Original')
+        
+        p2 <- autoplot(prcomp(t(result)),data =meta ,col='Batch',size=1,frame = TRUE, frame.type = 'norm')+
+            scale_color_manual(values =c("#377EB8","#E41A1C"))+
+            theme_bw()+
+            labs(x = "PC1", y = "PC2",title='Batch Corrected')
+        ggarrange(p1,p2, ncol = 2,common.legend = TRUE, legend="bottom") %>%
+        ggexport(filename = paste0(args$fig_out,'.pdf'),width=10,height=5)
     }
     write.csv(result,paste0(args$output))
 }
 
 parse_input = function(){
-    require_pkgs <- c('data.table','sva','argparse')
+    require_pkgs <- c('data.table','sva','argparse','ggfortify','ggpubr')
     scripts_wd <- dirname(thisFile())
     source(file.path(scripts_wd,'utils.R'))
     load_package(require_pkgs)
