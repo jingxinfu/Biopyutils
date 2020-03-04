@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 14/02/2020
-# Last Modified Date: 27/02/2020
+# Last Modified Date: 04/03/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 main = function(){
@@ -15,21 +15,25 @@ main = function(){
     meta <- meta[colnames(exprsn),]
     modcombat = model.matrix(~1, data=meta)
     result <- ComBat(exprsn,batch=meta$Batch,mod=modcombat,par.prior=T,prior.plots=F)
-    if(!is.null(args$fig_out)){
-        pdf(NULL)
-        p1 <- autoplot(prcomp(t(exprsn)),data =meta ,col='Batch',size=1,frame = TRUE, frame.type = 'norm')+
-            scale_color_manual(values =c("#377EB8","#E41A1C"))+
-            theme_bw()+
-            labs(x = "PC1", y = "PC2",title='Original')
-        
-        p2 <- autoplot(prcomp(t(result)),data =meta ,col='Batch',size=1,frame = TRUE, frame.type = 'norm')+
-            scale_color_manual(values =c("#377EB8","#E41A1C"))+
-            theme_bw()+
-            labs(x = "PC1", y = "PC2",title='Batch Corrected')
-        ggarrange(p1,p2, ncol = 2,common.legend = TRUE, legend="bottom") %>%
-        ggexport(filename = paste0(args$fig_out,'.pdf'),width=10,height=5)
-    }
     write.csv(result,paste0(args$output))
+    if(!is.null(args$fig_out)){
+        #colors = palette()[c(1:lenght(unique(meta$Batch)))]
+        pdf(NULL)
+        pc.res <-prcomp(t(exprsn))
+        pc.var <-  100*(signif(pc.res$sdev^2/sum(pc.res$sdev^2),digits=3))
+        p1 <- autoplot(pc.res,data =meta ,col='Batch',size=1)+ #frame = TRUE, frame.type = 'norm')+
+            theme_bw()+
+            labs(x = paste0("PC1 ( ",pc.var[1],"% variances )"), y = paste0("PC2 ( ",pc.var[2],"% variances )"),title="Original")
+        
+        pc.res <-prcomp(t(result))
+        pc.var <-  100*(signif(pc.res$sdev^2/sum(pc.res$sdev^2),digits=3))
+        p2 <- autoplot(pc.res,data =meta ,col='Batch',size=1)+#frame = TRUE, frame.type = 'norm')+
+            theme_bw()+
+            labs(x = paste0("PC1 ( ",pc.var[1],"% variances )"), y = paste0("PC2 ( ",pc.var[2],"% variances )"),title = "Batch Removal")
+
+        ggarrange(p1,p2, ncol = 2,common.legend = TRUE, legend="bottom") %>%
+            ggexport(filename = paste0(args$fig_out,'.pdf'),width=12,height=5)
+    }
 }
 
 parse_input = function(){
