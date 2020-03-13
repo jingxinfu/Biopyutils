@@ -23,13 +23,15 @@ main = function(){
         pc.var <-  100*(signif(pc.res$sdev^2/sum(pc.res$sdev^2),digits=3))
         p1 <- autoplot(pc.res,data =meta ,col='Batch',size=1)+ #frame = TRUE, frame.type = 'norm')+
             theme_bw()+
-            labs(x = paste0("PC1 ( ",pc.var[1],"% variances )"), y = paste0("PC2 ( ",pc.var[2],"% variances )"),title="Original")
+            scale_color_brewer(palette="Dark2") +
+            labs(x = paste0("PC1 ( ",pc.var[1],"% Explained Variance )"), y = paste0("PC2 ( ",pc.var[2],"% Explained Variance )"),title="Original")
         
         pc.res <-prcomp(t(result))
         pc.var <-  100*(signif(pc.res$sdev^2/sum(pc.res$sdev^2),digits=3))
         p2 <- autoplot(pc.res,data =meta ,col='Batch',size=1)+#frame = TRUE, frame.type = 'norm')+
             theme_bw()+
-            labs(x = paste0("PC1 ( ",pc.var[1],"% variances )"), y = paste0("PC2 ( ",pc.var[2],"% variances )"),title = "Batch Removal")
+            scale_color_brewer(palette="Dark2") +
+            labs(x = paste0("PC1 ( ",pc.var[1],"% Explained Variance )"), y = paste0("PC2 ( ",pc.var[2],"% Explained Variance )"),title = "Batch Removal")
 
         ggarrange(p1,p2, ncol = 2,common.legend = TRUE, legend="bottom") %>%
             ggexport(filename = paste0(args$fig_out,'.pdf'),width=12,height=5)

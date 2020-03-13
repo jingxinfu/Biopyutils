@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 11/02/2020
-# Last Modified Date: 27/02/2020
+# Last Modified Date: 13/03/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 import tempfile
@@ -130,11 +130,8 @@ def regDEG(logTpm,meta,group_name,contrast):
         Y  = meta.loc[logTpm.columns,group_name].map(factors_map).dropna(axis=0)
         # replace nan with zero and inf with finite numbers
         rawX = pd.DataFrame(np.nan_to_num(logTpm.loc[:,Y.index]),index=logTpm.index,columns=Y.index)
-        #logFc = rawX.dot(Y.T)
         logFc =  rawX.apply(lambda v:np.mean(v[Y==1]) - np.mean(v[Y==-1]),axis=1).values
-        pvalue = rawX.apply(lambda v: scipy.stats.mannwhitneyu(x=v[Y==1],y=v[Y==-1],alternative='greater').pvalue,axis=1).ravel()
-        #logFc = np.array([x.statistic for x in logFc_Pvalue])
-        #pvalue = [x.pvalue for x in logFc_Pvalue ]
+        pvalue = rawX.apply(lambda v: scipy.stats.mannwhitneyu(x=v[Y==1],y=v[Y==-1],alternative='two-sided').pvalue,axis=1).ravel()
         zscore = scaler.fit_transform(logFc.reshape(-1,1)).ravel()
         fdr = fdrAdjust(pvalue)
         result[statement] = pd.DataFrame({
