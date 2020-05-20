@@ -3,7 +3,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 10/02/2020
-# Last Modified Date: 25/02/2020
+# Last Modified Date: 20/05/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
@@ -286,6 +286,11 @@ def idConvert(df,species,map_id,logger=None,show_num=10):
         result = result.groupby(map_id).mean()
 
     return result
+
+def searchIds(source_id_list,species,map_id):
+    """Search mapped ids"""
+    ref = pd.read_pickle(getGeneRefPath(species=species,map_id=map_id))[source_id]
+    return ref[ref[source_id].isin(source_id),:]
 
 idConvert.__doc__ = dedent("""\
         Convert a list of one gene identifiers to the other one.
