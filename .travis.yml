@@ -1,7 +1,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 11/02/2020
-# Last Modified Date: 21/02/2020
+# Last Modified Date: 20/05/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 language: python
 os: 
@@ -32,4 +32,4 @@ script:
   - mkdir ~/R/
   - echo "R_LIBS=~/R" > ~/.Renviron 
   - R --version
-  - pytest
+  - pytest test/test_Comm.py
