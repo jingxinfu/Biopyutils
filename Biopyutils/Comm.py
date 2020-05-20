@@ -291,7 +291,7 @@ def searchIds(source_id_list,species,map_id):
     """Search mapped ids"""
     source_id = inferIDsource(pd.Series(source_id_list,index=source_id_list))
     ref = pd.read_pickle(getGeneRefPath(species=species,map_id=map_id))[source_id]
-    return ref[ref[source_id].isin(source_id_list),:]
+    return ref.loc[ref[source_id].isin(source_id_list),:]
 
 idConvert.__doc__ = dedent("""\
         Convert a list of one gene identifiers to the other one.
