@@ -8,9 +8,9 @@ os:
   - linux
 python:
   - "3.5" 
-  - "3.6"      
-  - "3.7"
-  - "3.8"
+    #- "3.6"      
+    #- "3.7"
+    #- "3.8"
 
 before_install:
   - echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" | sudo tee /etc/apt/sources.list.d/docker.list
