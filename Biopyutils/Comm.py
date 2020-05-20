@@ -278,7 +278,6 @@ def idConvert(df,species,map_id,logger=None,show_num=10):
 
     ref = pd.read_pickle(getGeneRefPath(species=species,map_id=map_id))[source_id]
     miss_ins = df.index.difference(ref.index).tolist()
-    print(ref.head())
     result = df.merge(ref,left_index=True,right_on=source_id)
     infoMissing(old=df.shape[0],new=result.shape[0],miss_ins=miss_ins,show_num=show_num,logger=logger)
     if source_id == 'ENST':
@@ -292,7 +291,7 @@ def searchIds(source_id_list,species,map_id):
     """Search mapped ids"""
     source_id = inferIDsource(pd.Series(source_id_list,index=source_id_list))
     ref = pd.read_pickle(getGeneRefPath(species=species,map_id=map_id))[source_id]
-    return ref[ref.index.str.isin(source_id_list)]
+    return ref[ref.index.isin(source_id_list)]
 
 idConvert.__doc__ = dedent("""\
         Convert a list of one gene identifiers to the other one.
