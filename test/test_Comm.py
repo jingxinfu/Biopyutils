@@ -34,6 +34,11 @@ class TestComm(unittest.TestCase):
         self.infoMissingCase = [
                 os.path.join(TestData,'Comm',x)  for x in os.listdir(os.path.join(TestData,'Comm')) if x.startswith('infoMissing')
                 ]
+    def test_searchIds(self):
+        symbols = ['NBR1','B2M']
+        result = Comm.searchID(symbols,species='hg',map_id='Entrez')
+        print(result)
+
     def test_infoMissing(self):
         import logging
         logging.basicConfig(level=logging.DEBUG)
