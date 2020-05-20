@@ -36,7 +36,7 @@ class TestComm(unittest.TestCase):
                 ]
     def test_searchIds(self):
         symbols = ['NBR1','B2M']
-        result = Comm.searchID(symbols,species='hg',map_id='Entrez')
+        result = Comm.searchIds(symbols,species='hg',map_id='Entrez')
         print(result)
 
     def test_infoMissing(self):
