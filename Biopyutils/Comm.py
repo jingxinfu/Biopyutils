@@ -289,7 +289,7 @@ def idConvert(df,species,map_id,logger=None,show_num=10):
 
 def searchIds(source_id_list,species,map_id):
     """Search mapped ids"""
-    source_id = inferIDsource(pd.Series(source_id,index=source_id_list))
+    source_id = inferIDsource(pd.Series(source_id_list,index=source_id_list))
     ref = pd.read_pickle(getGeneRefPath(species=species,map_id=map_id))[source_id]
     return ref[ref[source_id].isin(source_id_list),:]
 
