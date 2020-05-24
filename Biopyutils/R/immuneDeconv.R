@@ -1,11 +1,11 @@
 #!/usr/bin/Rscript
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 12/02/2020
-# Last Modified Date: 27/02/2020
+# Last Modified Date: 23/05/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 DESCRIPTION = 'Immune cell abundance deconvolution'
 main = function(){
-  require_pkgs <- c('parallel','icbi-lab/immunedeconv','sva','data.table','argparse')
+  require_pkgs <- c('parallel','immunedeconv','sva','data.table','argparse')
   scripts_wd <- dirname(thisFile())
   source(file.path(scripts_wd,'utils.R'))
   load_package(require_pkgs)

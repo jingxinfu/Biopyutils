@@ -3,9 +3,9 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 07/02/2020
-# Last Modified Date: 20/05/2020
+# Last Modified Date: 23/05/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
-__version__ = "0.1.6"
+__version__ = "0.1.6.2"
 import os
 import pkg_resources
 #from Biopyutils.Exprsn import *

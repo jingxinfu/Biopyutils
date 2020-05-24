@@ -3,7 +3,7 @@
 # License           : GPL3
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 11/02/2020
-# Last Modified Date: 20/02/2020
+# Last Modified Date: 23/05/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxin_fu@outlook.com>
@@ -38,10 +38,10 @@ setuptools.setup(
     package_data={NAME: ["data/*",'R/*','R/*/*'],},
     include_package_data=True,
     install_requires=REQUIRES,
-    python_requires='>=3.5, <=3.8',
+    python_requires='>=3.5',
     keywords= ['Gene ID Convertor', 'Bioinformatics','Genomics','Computational Biologist'],
     classifiers=[
-        "Programming Language :: Python 3",
+        "Programming Language :: Python",
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: Unix",
         "Operating System :: MacOS",
