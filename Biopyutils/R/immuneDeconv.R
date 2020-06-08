@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 12/02/2020
-# Last Modified Date: 23/05/2020
+# Last Modified Date: 27/05/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 DESCRIPTION = 'Immune cell abundance deconvolution'
 main = function(){
