@@ -32,7 +32,7 @@ main = function(){
 
   signature <- ifelse(args$cancer == 'AUTO', signatureDetect(exprsn_hs,scripts_wd=scripts_wd), args$cancer)
   result <- list()
-  for(tool in c('CIBERSORT','CIBERSORT-ABS','QUANTISEQ','XCELL','EPIC')) {
+  for(tool in c('TIMER','CIBERSORT','CIBERSORT-ABS','QUANTISEQ','XCELL','EPIC')) {
     result[[tool]] <- deconvAll(exprsn=exprsn_hs,tool=tool,cancer=signature,scripts_wd=scripts_wd)
   }
   ### Mouse Data

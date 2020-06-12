@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author            : Jingxin Fu <jingxinfu.tj@gmail.com>
 # Date              : 11/02/2020
-# Last Modified Date: 13/03/2020
+# Last Modified Date: 08/06/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
 
 import tempfile
@@ -211,7 +211,7 @@ def immuneDeconv(exprsn,cancer):
         )
         exprsn.to_csv(params['exprsn_path'])
 
-        Rscript(cmd='immuneDeconv.R',params=params)
+        Rscript(cmd='immunedeconv.R',params=params)
         result = pd.read_csv(params['output'],index_col=0)
     return result
 
