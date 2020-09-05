@@ -14,7 +14,7 @@ __doc__="""
 # Stable Table Fetching
 Original Data Source:http://useast.ensembl.org/biomart
 ## Ensl_hg38.gz and Ensl_mm10.gz:
-1. Select Ensembl Gene 99
+1. Select Ensembl Gene 101
 2. Choose Human genes (GRCh38.p13) for hg38 / Mouse genes (GRCm38.p6) for mm10
     GENE Panel:
         - Select Gene stable ID
@@ -26,7 +26,7 @@ Original Data Source:http://useast.ensembl.org/biomart
 Download the result (compressed file CSV , Unique deselected)
 
 ## Ensl_mm10_hg38_match.gz:
-1. Select Ensembl Gene 99
+1. Select Ensembl Gene 101
 2. Choose Human genes (GRCh38.p13)
     GENE Panel:
         - Select Gene stable ID
@@ -259,9 +259,11 @@ def main():
     ensl_rename = {
         'Gene stable ID':'ENSG',
         'Transcript stable ID':'ENST',
-        'NCBI gene ID':'Entrez',
+        # 'NCBI gene ID':'Entrez',
+        'NCBI gene (formerly Entrezgene) ID':'Entrez',
         'Gene name':'Symbol',
-        'NCBI gene description':'Name'
+        # 'NCBI gene description':'Name'
+        'NCBI gene (formerly Entrezgene) description':'Name'
     }
     hugo_rename ={
         'Approved symbol':'Symbol',
