@@ -5,3 +5,10 @@ This package provides functions that are frequently used by bioinformaticians.
 
 [Document](https://jingxinfu.github.io/Biopyutils)
 
+### Latest additions
+
+#### 1.1.9
+- Updates:
+  - the Ensembl Gene: v99->v101
+- Bug Fix:
+  - specify squeeze function with "columns"

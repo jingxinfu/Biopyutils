@@ -5,7 +5,7 @@
 # Date              : 07/02/2020
 # Last Modified Date: 08/06/2020
 # Last Modified By  : Jingxin Fu <jingxinfu.tj@gmail.com>
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 import os
 import pkg_resources
 #from Biopyutils.Exprsn import *

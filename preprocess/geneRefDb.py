@@ -259,9 +259,9 @@ def main():
     ensl_rename = {
         'Gene stable ID':'ENSG',
         'Transcript stable ID':'ENST',
-        'NCBI gene ID':'Entrez',
+        'NCBI gene (formerly Entrezgene) ID': 'Entrez',
         'Gene name':'Symbol',
-        'NCBI gene description':'Name'
+        'NCBI gene (formerly Entrezgene) description': 'Name'
     }
     hugo_rename ={
         'Approved symbol':'Symbol',

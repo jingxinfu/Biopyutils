@@ -143,7 +143,7 @@ def Keepdtype(func):
             kwargs['df'] = df
         result = func(*args,**kwargs)
         if series_flag:
-            return result.squeeze()
+            return result.squeeze('columns')
         elif list_flag:
             return result.index.tolist()
         else:
