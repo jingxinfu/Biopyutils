@@ -223,7 +223,7 @@ def speciesConvert(df,from_species,to_species,logger=None,show_num=10):
     ref = ref.drop_duplicates(subset=[from_species]).set_index(from_species)
     miss_ins = df.index.difference(ref.index).tolist()
     result = df.merge(ref,left_index=True,right_on=from_species)
-    infoMissing(old=df.shape[0],new=result.shape[0],miss_ins=miss_ins,show_num=show_num,logger=logger)
+    pinfoMissing(old=df.shape[0],new=result.shape[0],miss_ins=miss_ins,show_num=show_num,logger=logger)
 
     return result.groupby(to_species).mean()
 
