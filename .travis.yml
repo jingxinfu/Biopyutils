@@ -32,4 +32,5 @@ script:
   - mkdir ~/R/
   - echo "R_LIBS=~/R" > ~/.Renviron 
   - R --version
+  - pip freeze | grep pandas
   - pytest test/test_Comm.py
