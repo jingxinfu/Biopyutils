@@ -7,6 +7,10 @@ This package provides functions that are frequently used by bioinformaticians.
 
 ### Latest additions
 
+#### 1.2.0
+- Updates:
+  - ADD hg and mm match: Ggta1
+
 #### 1.1.9
 - Updates:
   - the Ensembl Gene: v99->v101
