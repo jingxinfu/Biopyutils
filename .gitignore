@@ -124,3 +124,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 preprocess/.DS_Store
+bin/.DS_Store
